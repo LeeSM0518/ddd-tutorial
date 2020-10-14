@@ -4,8 +4,6 @@ plugins {
     id 'java'
 }
 
-ext["h2.version"] = "1.4.199"
-
 group = 'io.wisoft'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
