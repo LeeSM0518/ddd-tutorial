@@ -5,17 +5,19 @@ import io.wisoft.dddtutorial.common.model.Address;
 import io.wisoft.dddtutorial.member.domain.MemberId;
 import io.wisoft.dddtutorial.model.Money;
 import io.wisoft.dddtutorial.order.command.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -25,12 +27,22 @@ class JpaOrderRepositoryTest {
   @Autowired
   JpaOrderRepository jpaOrderRepository;
 
+  private final OrderNo orderNo = new OrderNo("1");
+
+  @BeforeEach
+  public void remove() {
+    Order orderFoundById = jpaOrderRepository.findById(orderNo);
+    if (orderFoundById != null) {
+      jpaOrderRepository.remove(orderFoundById);
+    }
+  }
+
   @Test
+  @Rollback(value = false)
   void save() {
     // given
     MemberId memberId = new MemberId("1");
     Orderer orderer = new Orderer(memberId, "min");
-    OrderNo orderNo = new OrderNo("1");
     List<OrderLine> orderLines = getOrderLines();
     ShippingInfo shippingInfo = getShippingInfo();
     OrderState paymentWaiting = OrderState.PAYMENT_WAITING;
@@ -40,9 +52,8 @@ class JpaOrderRepositoryTest {
     jpaOrderRepository.save(order);
 
     // then
-    List<Order> all = jpaOrderRepository.findAll();
-    assertEquals(all.size(), 1);
-    assertEquals(orderNo.getNumber(), all.get(0).getNumber().getNumber());
+    Order orderFoundById = jpaOrderRepository.findById(orderNo);
+    assertEquals(order.getNumber().getNumber(), orderFoundById.getNumber().getNumber());
   }
 
   private ShippingInfo getShippingInfo() {

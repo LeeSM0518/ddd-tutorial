@@ -1,5 +1,14 @@
 spring:
+  datasource:
+    driver-class-name: org.h2.Driver  # h2 드라이버 설정
+    # DB를 확인해보고 싶으면 http://localhost:8787/h2-console 로 들어가서
+    #  url, username, password 를 아래와 같이 입력하고 connect
+    url: jdbc:h2:./db/test_db;AUTO_SERVER=TRUE # 접속 URL
+    username: test  # 사용자 이름
+    password: 1234  # 사용자 암호
   jpa:
+    hibernate:
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
