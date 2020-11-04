@@ -1,4 +1,4 @@
-package io.wisoft.dddtutorial.catalog.domain.product.ProductId;
+package io.wisoft.dddtutorial.catalog.domain.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

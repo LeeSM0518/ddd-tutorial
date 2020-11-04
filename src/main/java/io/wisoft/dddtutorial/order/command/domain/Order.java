@@ -42,8 +42,7 @@ public class Order {
   @OrderColumn(name = "line_idx")
   private List<OrderLine> orderLines;
 
-  @Embedded
-  @AttributeOverride(name = "value", column = @Column(name = "total_amounts"))
+  @Column(name = "total_amounts")
   private Money totalAmounts;
 
   @Embedded
@@ -71,6 +70,7 @@ public class Order {
 
   private void setOrderer(Orderer orderer) {
     if (orderer == null) throw new IllegalArgumentException("no orderer");
+    new OrderNo("1");
     this.orderer = orderer;
   }
 
@@ -80,14 +80,14 @@ public class Order {
     calculateTotalAmounts();
   }
 
-  private void verifyAtLeastOneOrMoreOrderLines(List<OrderLine> orderLines) {
-    if (orderLines == null || orderLines.isEmpty())
-      throw new IllegalArgumentException("no OrderLine");
-  }
-
   private void calculateTotalAmounts() {
     this.totalAmounts = new Money(orderLines.stream()
         .mapToInt(x -> x.getAmounts().getValue()).sum());
+  }
+
+  private void verifyAtLeastOneOrMoreOrderLines(List<OrderLine> orderLines) {
+    if (orderLines == null || orderLines.isEmpty())
+      throw new IllegalArgumentException("no OrderLine");
   }
 
   private void setShippingInfo(ShippingInfo shippingInfo) {
@@ -97,6 +97,7 @@ public class Order {
 
   public void changeShippingInfo(ShippingInfo shippingInfo) {
     verifyNotYetShipped();
+    setShippingInfo(shippingInfo);
   }
 
   private void verifyNotYetShipped() {
